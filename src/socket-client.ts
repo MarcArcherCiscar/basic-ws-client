@@ -1,7 +1,9 @@
-import { io, Manager, Socket } from 'socket.io-client';
+import { Manager, Socket } from 'socket.io-client';
+
+let socket: Socket;
 
 export const connectToServer = ( token: string ) => {
-    //localhost:3001/socket.io/socket.io.js
+
     const manager = new Manager('localhost:3001/socket.io/socket.io.js', {
         extraHeaders: {
             hola: 'mundo',
@@ -9,12 +11,13 @@ export const connectToServer = ( token: string ) => {
         }
     });
 
-    const socket = manager.socket('/');
+    socket?.removeAllListeners();
+    socket = manager.socket('/');
 
-    addListeners( socket );
+    addListeners();
 }
 
-const addListeners = ( socket: Socket ) => {
+const addListeners = () => {
     const clientsUl = document.querySelector<HTMLUListElement>('#clients-ul')!;
     const formMessage = document.querySelector<HTMLFormElement>('#form-message')!;
     const messageInput = document.querySelector<HTMLInputElement>('#message-input')!;
