@@ -12,6 +12,8 @@ export const connectToServer = () => {
 const addListeners = ( socket: Socket ) => {
     const serverStatusLabel = document.querySelector<HTMLSpanElement>('#server-status')!;
     const clientsUl = document.querySelector<HTMLUListElement>('#clients-ul')!;
+    const formMessage = document.querySelector<HTMLFormElement>('#form-message')!;
+    const messageInput = document.querySelector<HTMLInputElement>('#message-input')!;
 
     socket.on('connect', ()  => {
         console.log('Connected to server');
@@ -31,5 +33,28 @@ const addListeners = ( socket: Socket ) => {
         });
 
         clientsUl.innerHTML = clientsHtml;
+    });
+
+    formMessage.addEventListener('submit', ( event ) => {
+        event.preventDefault();
+
+        if(!messageInput.value) {
+            console.log('Message is empty');
+            return;
+        }
+
+        const message = messageInput.value;
+        const payload = {
+            id: socket.id,
+            message
+        }
+
+        console.log('Sending message', payload);
+
+        socket.emit('message-from-client', payload, ( id: string ) => {
+            console.log('Message delivered', id);
+        });
+
+        messageInput.value = '';
     });
 }
