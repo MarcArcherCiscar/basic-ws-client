@@ -10,10 +10,11 @@ export const connectToServer = () => {
 }
 
 const addListeners = ( socket: Socket ) => {
-    const serverStatusLabel = document.querySelector<HTMLSpanElement>('#server-status')!;
     const clientsUl = document.querySelector<HTMLUListElement>('#clients-ul')!;
     const formMessage = document.querySelector<HTMLFormElement>('#form-message')!;
     const messageInput = document.querySelector<HTMLInputElement>('#message-input')!;
+    const messagesUl = document.querySelector<HTMLUListElement>('#messages-ul')!;
+    const serverStatusLabel = document.querySelector<HTMLSpanElement>('#server-status')!;
 
     socket.on('connect', ()  => {
         console.log('Connected to server');
@@ -56,5 +57,12 @@ const addListeners = ( socket: Socket ) => {
         });
 
         messageInput.value = '';
+    });
+
+    socket.on('message-from-server', ( payload: { fullName: string, message: string } ) => {
+        console.log('Message from server', payload);
+        const messageHtml = `<li><strong>${ payload.fullName }</strong>: ${ payload.message }</li>`;
+        messagesUl.innerHTML += messageHtml;
+        messagesUl.scrollTop = messagesUl.scrollHeight;
     });
 }
